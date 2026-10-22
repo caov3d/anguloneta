@@ -216,7 +216,7 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 22-oct 05:09 PM</span>
+          <span id="header-total-badge">En Vivo: 22-oct 05:13 PM</span>
         </div>
         <span class="text-[10px] text-slate-400 font-medium">Autosincronización 24/7</span>
       </div>
@@ -533,6 +533,7 @@ body.theme-light #h2h-modal > div,
     function init() {
       initTheme();
       updateCategoryTabs();
+      updateCategoryTabs();
 
       const leagueSelect = document.getElementById('select-league');
       leagueSelect.innerHTML = '';
@@ -563,19 +564,22 @@ body.theme-light #h2h-modal > div,
 
     function updateLeaguePills() {
       const light = isLightMode();
-      for (const code of Object.keys(DB)) {
+      for (const [code, data] of Object.entries(DB)) {
         const pill = document.getElementById(`pill-lg-${code}`);
-        if (pill) {
-          const isCurrent = (code === currentLeague);
-          const flag = DB[code]?.flag || '';
-          pill.innerText = `${flag} ${code}`;
-          if (isCurrent) {
-            pill.className = 'px-3 py-1.5 rounded-xl whitespace-nowrap flex items-center gap-1 transition tap-active bg-emerald-600 text-white shadow-md font-black';
-          } else {
-            pill.className = light
-              ? 'px-3 py-1.5 rounded-xl whitespace-nowrap flex items-center gap-1 transition tap-active bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 font-bold'
-              : 'px-3 py-1.5 rounded-xl whitespace-nowrap flex items-center gap-1 transition tap-active bg-slate-800 text-slate-400 hover:text-white border border-slate-700 font-bold';
-          }
+        if (!pill) continue;
+
+        const matchesCat = (currentCategory === 'ALL') || (data.cat === currentCategory);
+        pill.style.display = matchesCat ? 'inline-flex' : 'none';
+
+        const isCurrent = (code === currentLeague);
+        const flag = data.flag || '';
+        pill.innerText = `${flag} ${code}`;
+        if (isCurrent) {
+          pill.className = 'px-3 py-1.5 rounded-xl whitespace-nowrap flex items-center gap-1 transition tap-active bg-emerald-600 text-white shadow-md font-black';
+        } else {
+          pill.className = light
+            ? 'px-3 py-1.5 rounded-xl whitespace-nowrap flex items-center gap-1 transition tap-active bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 font-bold'
+            : 'px-3 py-1.5 rounded-xl whitespace-nowrap flex items-center gap-1 transition tap-active bg-slate-800 text-slate-400 hover:text-white border border-slate-700 font-bold';
         }
       }
     }
@@ -952,15 +956,63 @@ body.theme-light #h2h-modal > div,
       modal.classList.toggle('hidden');
     }
 
+    let currentCategory = 'ALL';
+
+    function setCategoryTab(cat) {
+      currentCategory = cat;
+      updateCategoryTabs();
+      updateLeaguePills();
+    }
+
+    function updateCategoryTabs() {
+      const light = isLightMode();
+      ['all', '1', '2'].forEach(c => {
+        const btn = document.getElementById(`btn-cat-${c}`);
+        if (!btn) return;
+        const isActive = (c === 'all' && currentCategory === 'ALL') ||
+                         (c === '1' && currentCategory === '1ª') ||
+                         (c === '2' && currentCategory === '2ª');
+        if (isActive) {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white shadow-sm tap-active transition font-black';
+        } else {
+          btn.className = light
+            ? 'px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 tap-active transition font-bold'
+            : 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 tap-active transition font-bold';
+        }
+      });
+    }
+
+    function cleanStr(s) {
+      if (!s) return '';
+      return s.normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function teamNamesMatch(tKey, rawName) {
+      const c1 = cleanStr(tKey);
+      const c2 = cleanStr(rawName);
+      if (c1 === c2 || c1.includes(c2) || c2.includes(c1)) return true;
+      const noise = ['club', 'fc', 'cd', 'cf', 'sc', 'de', 'del', 'la', 'el', 'los', 'las', 'deportivo', 'atletico', 'real'];
+      const w1 = c1.split(' ').filter(w => w.length >= 3 && !noise.includes(w));
+      const w2 = c2.split(' ').filter(w => w.length >= 3 && !noise.includes(w));
+      return w1.some(w => w2.includes(w));
+    }
+
     async function liveSyncFromESPN() {
       const icon = document.getElementById('icon-refresh');
       if (icon) icon.classList.add('animate-spin');
 
       const leagueSlugs = {
-        'COL': 'col.1', 'ARG': 'arg.1', 'MX': 'mex.1', 'LALIGA': 'esp.1',
-        'PREMIER': 'eng.1', 'SERIE A': 'ita.1', 'LIGUE 1': 'fra.1', 'ALEM': 'ger.1',
-        'PORT': 'por.1', 'TUR': 'tur.1', 'HOLA': 'ned.1', 'JAP': 'jpn.1',
-        'SAR A': 'ksa.1', 'IND': 'idn.1', 'BELG': 'bel.1'
+        'COL': 'col.1', 'ARG': 'arg.1', 'BRA': 'bra.1', 'MX': 'mex.1',
+        'LALIGA': 'esp.1', 'PREMIER': 'eng.1', 'SERIE A': 'ita.1', 'ALEM': 'ger.1',
+        'LIGUE 1': 'fra.1', 'PORT': 'por.1', 'HOLA': 'ned.1', 'TUR': 'tur.1',
+        'BELG': 'bel.1', 'SAR A': 'ksa.1', 'JAP': 'jpn.1', 'IND': 'idn.1',
+        'LALIGA B': 'esp.2', 'SHIP': 'eng.2', 'SERIE B': 'ita.2', 'ALEM 2': 'ger.2',
+        'LIGUE 2': 'fra.2', 'BRA B': 'bra.2', 'ARG B': 'arg.2', 'MX B': 'mex.2'
       };
 
       const slug = leagueSlugs[currentLeague];
@@ -969,75 +1021,107 @@ body.theme-light #h2h-modal > div,
         return;
       }
 
+      // TRIPLE FUENTE: Ventana rodante de 5 días (hoy + 4 días atrás) + Espejo alterno de respaldo
+      const datesToQuery = [];
+      for (let i = 0; i < 5; i++) {
+        const dt = new Date();
+        dt.setDate(dt.getDate() - i);
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const d = String(dt.getDate()).padStart(2, '0');
+        datesToQuery.push(`${y}${m}${d}`);
+      }
+
+      async function fetchEndpoint(ymd) {
+        // Servidor 1: ESPN API principal
+        try {
+          const r1 = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymd}`);
+          if (r1.ok) return await r1.json();
+        } catch(e) {}
+        // Servidor 2: ESPN Web API Espejo de Respaldo
+        try {
+          const r2 = await fetch(`https://site.web.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymd}`);
+          if (r2.ok) return await r2.json();
+        } catch(e) {}
+        return null;
+      }
+
       try {
-        const resp = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard`);
-        if (resp.ok) {
-          const data = await resp.json();
+        const results = await Promise.all(datesToQuery.map(ymd => fetchEndpoint(ymd)));
+        const meses = ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sept.', 'oct.', 'nov.', 'dic.'];
+
+        results.forEach(data => {
+          if (!data) return;
           const events = data.events || [];
-          
           events.forEach(ev => {
             const comp = (ev.competitions && ev.competitions[0]) || {};
             const isCompleted = comp.status && comp.status.type && comp.status.type.completed;
+            if (!isCompleted) return;
+
             const comps = comp.competitors || [];
-            if (comps.length >= 2) {
-              const home = comps.find(c => c.homeAway === 'home') || comps[0];
-              const away = comps.find(c => c.homeAway === 'away') || comps[1];
-              const homeName = (home.team && home.team.displayName) || '';
-              const awayName = (away.team && away.team.displayName) || '';
-              const hScore = parseInt(home.score || '0');
-              const aScore = parseInt(away.score || '0');
-              const marcador = `${hScore} - ${aScore}`;
-              const am = (hScore > 0 && aScore > 0) ? 'SI' : 'NO';
+            if (comps.length < 2) return;
 
-              const lData = DB[currentLeague];
-              if (lData && lData.teams) {
-                for (const tKey of Object.keys(lData.teams)) {
-                  const tLower = tKey.toLowerCase();
-                  const isH = homeName.toLowerCase().includes(tLower) || tLower.includes(homeName.toLowerCase());
-                  const isA = awayName.toLowerCase().includes(tLower) || tLower.includes(awayName.toLowerCase());
-                  
-                  if (isCompleted && (isH || isA)) {
-                    const rivalName = isH ? awayName : homeName;
-                    const cond = isH ? 'LOCAL' : 'VISITANTE';
-                    let res = 'E';
-                    if (isH) {
-                      if (hScore > aScore) res = 'G';
-                      else if (hScore < aScore) res = 'P';
-                      else res = (hScore === 0) ? '0-0' : 'E';
-                    } else {
-                      if (aScore > hScore) res = 'G';
-                      else if (aScore < hScore) res = 'P';
-                      else res = (hScore === 0) ? '0-0' : 'E';
-                    }
+            const home = comps.find(c => c.homeAway === 'home') || comps[0];
+            const away = comps.find(c => c.homeAway === 'away') || comps[1];
+            const homeName = (home.team && home.team.displayName) || '';
+            const awayName = (away.team && away.team.displayName) || '';
+            const hScore = parseInt(home.score || '0');
+            const aScore = parseInt(away.score || '0');
+            const marcador = `${hScore} - ${aScore}`;
+            const am = (hScore > 0 && aScore > 0) ? 'SI' : 'NO';
 
-                    const mList = lData.teams[tKey];
-                    const exists = mList.some(m => m.rival && m.rival.toLowerCase().includes(rivalName.toLowerCase()));
-                    if (!exists) {
-                      const now = new Date();
-                      const meses = ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sept.', 'oct.', 'nov.', 'dic.'];
-                      const fStr = `${String(now.getDate()).padStart(2, '0')}-${meses[now.getMonth()]}`;
-                      mList.push({ f: fStr, c: cond, r: res, am: am, m: marcador, rival: rivalName });
-                    }
+            let fStr = '';
+            if (ev.date) {
+              const matchDate = new Date(ev.date);
+              fStr = `${String(matchDate.getDate()).padStart(2, '0')}-${meses[matchDate.getMonth()]}`;
+            } else {
+              const now = new Date();
+              fStr = `${String(now.getDate()).padStart(2, '0')}-${meses[now.getMonth()]}`;
+            }
+
+            const lData = DB[currentLeague];
+            if (lData && lData.teams) {
+              for (const tKey of Object.keys(lData.teams)) {
+                const isH = teamNamesMatch(tKey, homeName);
+                const isA = teamNamesMatch(tKey, awayName);
+
+                if (isH || isA) {
+                  const rivalName = isH ? awayName : homeName;
+                  const cond = isH ? 'LOCAL' : 'VISITANTE';
+                  let res = 'E';
+                  if (isH) {
+                    if (hScore > aScore) res = 'G';
+                    else if (hScore < aScore) res = 'P';
+                    else res = (hScore === 0) ? '0-0' : 'E';
+                  } else {
+                    if (aScore > hScore) res = 'G';
+                    else if (aScore < hScore) res = 'P';
+                    else res = (hScore === 0) ? '0-0' : 'E';
+                  }
+
+                  const mList = lData.teams[tKey];
+                  const exists = mList.some(m => m.f === fStr || (m.rival && teamNamesMatch(m.rival, rivalName)));
+                  if (!exists) {
+                    mList.push({ f: fStr, c: cond, r: res, am: am, m: marcador, rival: rivalName });
                   }
                 }
               }
             }
           });
+        });
 
-          const now = new Date();
-          const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          const badge = document.getElementById('header-total-badge');
-          if (badge) badge.innerText = `En Vivo: ${hora}`;
+        const now = new Date();
+        const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const badge = document.getElementById('header-total-badge');
+        if (badge) badge.innerText = `En Vivo: ${hora} (Triple Fuente)`;
 
-          renderTeamView();
-        }
+        renderTeamView();
       } catch (e) {
-        console.log('Error en vivo ESPN:', e);
+        console.log('Error en sincronización en vivo:', e);
       } finally {
         if (icon) icon.classList.remove('animate-spin');
       }
     }
-
     // Iniciar al cargar y refrescar automáticamente en vivo cada 2 minutos
     document.addEventListener('DOMContentLoaded', () => {
       init();
