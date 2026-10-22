@@ -216,7 +216,7 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 22-oct 05:13 PM</span>
+          <span id="header-total-badge">En Vivo: 22-oct 05:19 PM</span>
         </div>
         <span class="text-[10px] text-slate-400 font-medium">Autosincronización 24/7</span>
       </div>
@@ -481,6 +481,7 @@ body.theme-light #h2h-modal > div,
     let currentLeague = 'COL';
     let currentTeam = '';
     let currentCondition = 'ALL';
+    let currentCategory = 'ALL';
     let toastTimeout = null;
 
     // ==========================================
@@ -956,12 +957,22 @@ body.theme-light #h2h-modal > div,
       modal.classList.toggle('hidden');
     }
 
-    let currentCategory = 'ALL';
-
     function setCategoryTab(cat) {
       currentCategory = cat;
       updateCategoryTabs();
       updateLeaguePills();
+
+      const lData = DB[currentLeague];
+      if (currentCategory !== 'ALL' && lData && lData.cat !== currentCategory) {
+        const firstCode = Object.keys(DB).find(c => DB[c].cat === currentCategory);
+        if (firstCode) {
+          const select = document.getElementById('select-league');
+          if (select) {
+            select.value = firstCode;
+            onLeagueChange();
+          }
+        }
+      }
     }
 
     function updateCategoryTabs() {
@@ -1100,8 +1111,16 @@ body.theme-light #h2h-modal > div,
                   }
 
                   const mList = lData.teams[tKey];
-                  const exists = mList.some(m => m.f === fStr || (m.rival && teamNamesMatch(m.rival, rivalName)));
-                  if (!exists) {
+                  const normDate = (s) => (s || '').replace(/\./g, '').trim().toLowerCase();
+                  const existingIdx = mList.findIndex(m => normDate(m.f) === normDate(fStr) && m.c === cond);
+                  if (existingIdx >= 0) {
+                    if (!mList[existingIdx].m || mList[existingIdx].m.trim() === '') {
+                      mList[existingIdx].m = marcador;
+                      mList[existingIdx].r = res;
+                      mList[existingIdx].am = am;
+                      mList[existingIdx].rival = rivalName;
+                    }
+                  } else {
                     mList.push({ f: fStr, c: cond, r: res, am: am, m: marcador, rival: rivalName });
                   }
                 }
