@@ -66,11 +66,16 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
+          <button id="btn-refresh" onclick="liveSyncFromESPN()" title="Actualizar en vivo desde ESPN" class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/40 flex items-center justify-center text-xs font-bold transition tap-active">
+            <svg id="icon-refresh" class="w-4 h-4 transition-transform duration-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+          </button>
           <button onclick="toggleInfoModal()" title="Convenciones de Colores" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white border border-slate-700 flex items-center justify-center text-xs font-bold transition">
             ℹ️
           </button>
           <span class="px-2.5 py-1 rounded-xl bg-slate-800 text-emerald-400 border border-slate-700 text-xs font-mono font-bold" id="header-total-badge">
-            Act: 21-oct 08:28 PM
+            Act: 21-oct 10:37 PM
           </span>
         </div>
       </div>
@@ -727,8 +732,98 @@
       modal.classList.toggle('hidden');
     }
 
-    // Iniciar al cargar
-    document.addEventListener('DOMContentLoaded', init);
+    async function liveSyncFromESPN() {
+      const icon = document.getElementById('icon-refresh');
+      if (icon) icon.classList.add('animate-spin');
+
+      const leagueSlugs = {
+        'COL': 'col.1', 'ARG': 'arg.1', 'MX': 'mex.1', 'LALIGA': 'esp.1',
+        'PREMIER': 'eng.1', 'SERIE A': 'ita.1', 'LIGUE 1': 'fra.1', 'ALEM': 'ger.1',
+        'PORT': 'por.1', 'TUR': 'tur.1', 'HOLA': 'ned.1', 'JAP': 'jpn.1',
+        'SAR A': 'ksa.1', 'IND': 'idn.1', 'BELG': 'bel.1'
+      };
+
+      const slug = leagueSlugs[currentLeague];
+      if (!slug) {
+        if (icon) icon.classList.remove('animate-spin');
+        return;
+      }
+
+      try {
+        const resp = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard`);
+        if (resp.ok) {
+          const data = await resp.json();
+          const events = data.events || [];
+          
+          events.forEach(ev => {
+            const comp = (ev.competitions && ev.competitions[0]) || {};
+            const isCompleted = comp.status && comp.status.type && comp.status.type.completed;
+            const comps = comp.competitors || [];
+            if (comps.length >= 2) {
+              const home = comps.find(c => c.homeAway === 'home') || comps[0];
+              const away = comps.find(c => c.homeAway === 'away') || comps[1];
+              const homeName = (home.team && home.team.displayName) || '';
+              const awayName = (away.team && away.team.displayName) || '';
+              const hScore = parseInt(home.score || '0');
+              const aScore = parseInt(away.score || '0');
+              const marcador = `${hScore} - ${aScore}`;
+              const am = (hScore > 0 && aScore > 0) ? 'SI' : 'NO';
+
+              const lData = DB[currentLeague];
+              if (lData && lData.teams) {
+                for (const tKey of Object.keys(lData.teams)) {
+                  const tLower = tKey.toLowerCase();
+                  const isH = homeName.toLowerCase().includes(tLower) || tLower.includes(homeName.toLowerCase());
+                  const isA = awayName.toLowerCase().includes(tLower) || tLower.includes(awayName.toLowerCase());
+                  
+                  if (isCompleted && (isH || isA)) {
+                    const rivalName = isH ? awayName : homeName;
+                    const cond = isH ? 'LOCAL' : 'VISITANTE';
+                    let res = 'E';
+                    if (isH) {
+                      if (hScore > aScore) res = 'G';
+                      else if (hScore < aScore) res = 'P';
+                      else res = (hScore === 0) ? '0-0' : 'E';
+                    } else {
+                      if (aScore > hScore) res = 'G';
+                      else if (aScore < hScore) res = 'P';
+                      else res = (hScore === 0) ? '0-0' : 'E';
+                    }
+
+                    const mList = lData.teams[tKey];
+                    const exists = mList.some(m => m.rival && m.rival.toLowerCase().includes(rivalName.toLowerCase()));
+                    if (!exists) {
+                      const now = new Date();
+                      const meses = ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sept.', 'oct.', 'nov.', 'dic.'];
+                      const fStr = `${String(now.getDate()).padStart(2, '0')}-${meses[now.getMonth()]}`;
+                      mList.push({ f: fStr, c: cond, r: res, am: am, m: marcador, rival: rivalName });
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          const now = new Date();
+          const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const badge = document.getElementById('header-total-badge');
+          if (badge) badge.innerText = `En Vivo: ${hora}`;
+
+          renderTeamView();
+        }
+      } catch (e) {
+        console.log('Error en vivo ESPN:', e);
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
+      }
+    }
+
+    // Iniciar al cargar y refrescar automáticamente en vivo cada 2 minutos
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      setTimeout(liveSyncFromESPN, 800);
+      setInterval(liveSyncFromESPN, 120000);
+    });
   </script>
 </body>
 </html>
