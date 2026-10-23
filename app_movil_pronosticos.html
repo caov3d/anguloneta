@@ -8,7 +8,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
-  <meta name="anguloneta-version" content="2.1">
+  <meta name="anguloneta-version" content="2.2">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -217,9 +217,9 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 22-oct 10:20 PM</span>
+          <span id="header-total-badge">En Vivo: 23-oct 08:49 AM</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Versión 2.1 · compilada 22-oct 10:20 PM</span>
+        <span class="text-[10px] text-slate-400 font-medium">Versión 2.2 · compilada 23-oct 08:49 AM</span>
       </div>
 
       <!-- SELECTOR RÁPIDO DE CATEGORÍA (TODAS, 1ª DIV, 2ª DIV, COPAS) -->
@@ -841,8 +841,8 @@ body.theme-light #h2h-modal > div,
       const teamHomeName = isHome ? currentTeam : rivalName;
       const teamAwayName = isHome ? rivalName : currentTeam;
 
-      const teamHomeData = lData.teams[teamHomeName] || [];
-      const teamAwayData = lData.teams[teamAwayName] || [];
+      const teamHomeData = (findTeamEverywhere(teamHomeName) || {}).rows || [];
+      const teamAwayData = (findTeamEverywhere(teamAwayName) || {}).rows || [];
 
       document.getElementById('h2h-match-date').innerText = `${matchInfo.date} (Horario Col) · Liga en curso`;
 
@@ -1127,16 +1127,30 @@ body.theme-light #h2h-modal > div,
       document.getElementById('h2h-modal').classList.add('hidden');
     }
 
+    // Busca un equipo en la liga actual y, si no está (ej. rival de liga local visto desde una Copa), en las demás ligas
+    function findTeamEverywhere(name) {
+      if (DB[currentLeague] && DB[currentLeague].teams[name]) return { code: currentLeague, rows: DB[currentLeague].teams[name] };
+      let best = null;
+      for (const [code, l] of Object.entries(DB)) {
+        if (!l.teams[name]) continue;
+        const rank = (l.cat === '1ª' ? 0 : l.cat === '2ª' ? 1 : 2);
+        if (!best || rank < best.rank) best = { code: code, rows: l.teams[name], rank: rank };
+      }
+      return best;
+    }
+
     function switchToTeam(targetTeam) {
       closeH2HModal();
-      const teamSelect = document.getElementById('select-team');
-      for (const opt of teamSelect.options) {
-        if (opt.value === targetTeam) {
-          teamSelect.value = targetTeam;
-          onTeamSelect();
-          return;
-        }
+      const found = findTeamEverywhere(targetTeam);
+      if (!found) return;
+      if (found.code !== currentLeague) {
+        document.getElementById('select-league').value = found.code;
+        onLeagueChange(targetTeam);
+        return;
       }
+      const teamSelect = document.getElementById('select-team');
+      teamSelect.value = targetTeam;
+      onTeamSelect();
     }
 
     function toggleInfoModal() {
