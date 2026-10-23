@@ -216,7 +216,7 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 22-oct 07:58 PM</span>
+          <span id="header-total-badge">En Vivo: 22-oct 08:00 PM</span>
         </div>
         <span class="text-[10px] text-slate-400 font-medium">Autosincronización 24/7</span>
       </div>
@@ -713,18 +713,21 @@ body.theme-light #h2h-modal > div,
 
           item.innerHTML = `
             <div class="flex items-center justify-between mb-2 gap-2">
-              <div class="flex items-center gap-1.5 min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
                 ${condBadge}
-                <span class="text-xs font-black text-white group-hover:text-emerald-400 transition truncate">vs ${m.rival}</span>
                 ${compPill}
               </div>
-              <span class="text-[11px] font-mono font-black text-slate-300 bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-700 flex-shrink-0">${m.date}</span>
+              <span class="text-[10px] sm:text-[11px] font-mono font-black text-slate-300 bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-700 flex-shrink-0">${m.date}</span>
+            </div>
+            <div class="text-xs sm:text-sm font-black text-white group-hover:text-emerald-400 transition mb-2 flex items-center gap-1.5">
+              <span class="text-slate-400 font-semibold text-xs">vs</span>
+              <span>${m.rival}</span>
             </div>
             <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-slate-800/80">
               <span class="flex items-center gap-1 text-emerald-400 font-black">
                 <span>⚔️</span> Ver Cara a Cara (Comparativa)
               </span>
-              <span class="text-[10px] text-slate-500 font-bold">Toca aquí ➔</span>
+              <span class="text-[10px] text-slate-500 font-bold group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all">Toca aquí ➔</span>
             </div>
           `;
           nextList.appendChild(item);
