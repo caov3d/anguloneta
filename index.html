@@ -8,8 +8,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
-  <meta name="anguloneta-version" content="2.3">
-  <meta name="anguloneta-build" content="202610230909">
+  <meta name="anguloneta-version" content="2.4">
+  <meta name="anguloneta-build" content="202610230925">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -218,9 +218,9 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 23-oct 09:09 AM</span>
+          <span id="header-total-badge">En Vivo: 23-oct 09:25 AM</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Versión 2.3 · compilada 23-oct 09:09 AM</span>
+        <span class="text-[10px] text-slate-400 font-medium">Versión 2.4 · compilada 23-oct 09:25 AM</span>
       </div>
 
       <!-- SELECTOR RÁPIDO DE CATEGORÍA (TODAS, 1ª DIV, 2ª DIV, COPAS) -->
@@ -951,6 +951,15 @@ body.theme-light #h2h-modal > div,
       document.getElementById('h2h-modal').classList.remove('hidden');
     }
 
+    function toggleH2HDetalle() {
+      const box = document.getElementById('h2h-detalle');
+      const btn = document.getElementById('btn-h2h-detalle');
+      if (!box || !btn) return;
+      const oculto = box.classList.toggle('hidden');
+      const n = box.children.length;
+      btn.innerText = oculto ? `Ver los ${n} partidos ▾` : 'Ocultar partidos ▴';
+    }
+
     function makePairKey(t1, t2) {
       function cleanK(n) {
         return (n || '').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Z0-9]/g, '');
@@ -1105,7 +1114,28 @@ body.theme-light #h2h-modal > div,
         `;
       }).join('');
 
-      return summaryBar + cardsHtml;
+      const nPart = top5.length;
+      const resumen = `
+        <div class="grid grid-cols-3 gap-1.5 text-center font-mono mb-1.5">
+          <div class="bg-slate-950 rounded-xl border border-emerald-500/40 py-2 px-1 min-w-0">
+            <div class="text-xl font-black text-emerald-400">${hWins}</div>
+            <div class="text-[9px] font-bold text-slate-300 truncate">${teamHomeName}</div><div class="text-[8px] text-slate-500">victorias</div>
+          </div>
+          <div class="bg-slate-950 rounded-xl border border-amber-400/40 py-2 px-1">
+            <div class="text-xl font-black text-amber-300">${draws}</div>
+            <div class="text-[9px] font-bold text-slate-400">Empates</div>
+          </div>
+          <div class="bg-slate-950 rounded-xl border border-indigo-500/40 py-2 px-1 min-w-0">
+            <div class="text-xl font-black text-indigo-400">${aWins}</div>
+            <div class="text-[9px] font-bold text-slate-300 truncate">${teamAwayName}</div><div class="text-[8px] text-slate-500">victorias</div>
+          </div>
+        </div>
+        <button id="btn-h2h-detalle" onclick="toggleH2HDetalle()" class="w-full py-2 mb-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-xl text-[11px] font-black text-emerald-400 tap-active">
+          Ver los ${nPart} partidos ▾
+        </button>
+        <div id="h2h-detalle" class="hidden space-y-1.5">${cardsHtml}</div>
+      `;
+      return resumen;
     }
 
     function renderStreakList(matches) {
