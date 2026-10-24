@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
   <meta name="anguloneta-version" content="3.2">
-  <meta name="anguloneta-build" content="202610241315">
+  <meta name="anguloneta-build" content="202610241317">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VPLT4E8FD9"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"3.2",debug_mode:/[?&]debug=1/.test(location.search)});</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
@@ -228,7 +228,7 @@ body.theme-light #h2h-modal > div,
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span id="header-total-badge">En vivo · ESPN</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap">Versión del 24-oct 01:15 PM</span>
+        <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap">Versión del 24-oct 01:17 PM</span>
       </div>
 
       <div id="header-equipos-filters" class="hidden space-y-1">
@@ -372,7 +372,7 @@ body.theme-light #h2h-modal > div,
         <div class="flex items-center gap-2 min-w-0">
           <span class="text-base sm:text-lg flex-shrink-0">📅</span>
           <div class="min-w-0">
-            <h3 class="text-xs font-black uppercase text-white tracking-wider truncate">📅 PRÓXIMOS PARTIDOS</h3>
+            <h3 class="text-xs font-black uppercase text-white tracking-wider truncate">PRÓXIMOS PARTIDOS</h3>
             <p class="text-[10px] text-emerald-400 font-bold truncate">Toca el partido para abrir el Cara a Cara</p>
           </div>
         </div>
@@ -404,7 +404,7 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[10px] font-black px-1 text-slate-300">
         <span class="flex items-center gap-1"><span class="w-3.5 h-3.5 rounded excel-g inline-flex items-center justify-center text-[9px]">G</span> Ganó</span>
         <span class="flex items-center gap-1"><span class="w-3.5 h-3.5 rounded excel-e inline-flex items-center justify-center text-[9px]">E</span> Empató</span>
-        <span class="flex items-center gap-1"><span class="w-3.5 h-3.5 rounded excel-00 inline-flex items-center justify-center text-[8px]">0-0</span></span>
+        <span class="flex items-center gap-1"><span class="min-w-[24px] px-0.5 h-3.5 rounded excel-00 inline-flex items-center justify-center text-[8px] whitespace-nowrap">0-0</span></span>
         <span class="flex items-center gap-1"><span class="w-3.5 h-3.5 rounded excel-p inline-flex items-center justify-center text-[9px]">P</span> Perdió</span>
         <span class="flex items-center gap-1"><span class="w-3.5 h-3.5 rounded excel-am-si inline-flex items-center justify-center text-[8px]">SÍ</span> Ambos</span>
       </div>
@@ -759,7 +759,7 @@ body.theme-light #h2h-modal > div,
       // Renderizar Próximas 2 Fechas (con botón Cara a Cara)
       const nextList = document.getElementById('list-next-matches');
       nextList.innerHTML = '';
-      const upcoming = (lData.next_matches && lData.next_matches[currentTeam]) || [];
+      const upcoming = ((lData.next_matches && lData.next_matches[currentTeam]) || []).filter(m => !m.dt || new Date(m.dt).getTime() > Date.now() - 3 * 3600000);   // no mostrar los ya jugados
       
       if (upcoming.length === 0) {
         nextList.innerHTML = '<div class="text-xs text-slate-400 text-center py-2.5 bg-slate-950 rounded-2xl border border-dashed border-slate-800 font-medium">Sin partidos programados en las próximas 4 semanas.</div>';
@@ -911,7 +911,7 @@ body.theme-light #h2h-modal > div,
       const teamHomeData = (findTeamEverywhere(teamHomeName) || {}).rows || [];
       const teamAwayData = (findTeamEverywhere(teamAwayName) || {}).rows || [];
 
-      document.getElementById('h2h-match-date').innerText = `${matchInfo.date} (Horario Col) · Liga en curso`;
+      document.getElementById('h2h-match-date').innerText = `${matchInfo.date} · hora de Colombia`;
 
       function calcStats(matches) {
         let g = 0, e = 0, p = 0, am_si = 0, goals = 0;
@@ -938,12 +938,12 @@ body.theme-light #h2h-modal > div,
         <div class="grid grid-cols-2 gap-2.5 text-center">
           <div class="bg-slate-950 p-3 rounded-2xl border border-emerald-500/40 min-w-0">
             <div class="text-[10px] font-black text-emerald-400 uppercase font-mono">LOCAL</div>
-            <div class="text-xs sm:text-sm font-black text-white mt-1 truncate">${teamHomeName}</div>
+            <div class="text-xs sm:text-sm font-black text-white mt-1 leading-tight break-words">${teamHomeName}</div>
             <div class="text-xs font-bold text-emerald-400 mt-0.5">${sHome.winPct}% Victorias</div>
           </div>
           <div class="bg-slate-950 p-3 rounded-2xl border border-indigo-500/40 min-w-0">
             <div class="text-[10px] font-black text-indigo-400 uppercase font-mono">VISITANTE</div>
-            <div class="text-xs sm:text-sm font-black text-white mt-1 truncate">${teamAwayName}</div>
+            <div class="text-xs sm:text-sm font-black text-white mt-1 leading-tight break-words">${teamAwayName}</div>
             <div class="text-xs font-bold text-indigo-400 mt-0.5">${sAway.winPct}% Victorias</div>
           </div>
         </div>
@@ -997,7 +997,6 @@ body.theme-light #h2h-modal > div,
               <span>⚔️</span>
               <span>ÚLTIMOS 5 ENFRENTAMIENTOS DIRECTOS</span>
             </span>
-            <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">Cara a Cara</span>
           </div>
 
           <div class="space-y-1.5 font-mono text-xs">
@@ -1288,10 +1287,10 @@ body.theme-light #h2h-modal > div,
         const amClass = (m.am === 'SI') ? 'excel-am-si' : 'excel-am-no';
         const amText = (m.am === 'SI') ? 'SÍ' : 'NO';
         return `
-          <div class="flex items-center justify-between px-1">
-            <span class="text-[10px] text-slate-400 font-mono">${m.f}</span>
+          <div class="grid grid-cols-[1fr_26px_34px] items-center gap-1.5 px-1">
+            <span class="text-[10px] text-slate-400 font-mono text-left">${m.f}</span>
             <span class="w-6 h-6 rounded ${bClass} flex items-center justify-center text-[10px] font-black">${m.r || '-'}</span>
-            <span class="text-[10px] ${amClass} px-1.5 py-0.5 rounded">${amText}</span>
+            <span class="text-[10px] ${amClass} py-0.5 rounded text-center">${amText}</span>
           </div>
         `;
       }).join('');
