@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
   <meta name="anguloneta-version" content="3.2">
-  <meta name="anguloneta-build" content="202610241309">
+  <meta name="anguloneta-build" content="202610241315">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VPLT4E8FD9"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"3.2",debug_mode:/[?&]debug=1/.test(location.search)});</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
@@ -194,10 +194,10 @@ body.theme-light #h2h-modal > div,
           </div>
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
-              <h1 class="text-lg sm:text-xl font-black tracking-tight text-white uppercase truncate">ANGULONETA</h1>
+              <h1 class="text-base sm:text-xl font-black tracking-tight text-white uppercase">ANGULONETA</h1>
               <span class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded-full font-black">v3.2</span>
             </div>
-            <p class="text-[11px] text-slate-400 font-medium truncate">37 Ligas y Torneos · En Curso</p>
+            <p class="text-[11px] text-slate-400 font-medium truncate">37 ligas y torneos</p>
           </div>
         </div>
 
@@ -224,11 +224,11 @@ body.theme-light #h2h-modal > div,
 
       <!-- FILA 2: ESTADO EN VIVO Y BADGE -->
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
-        <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
+        <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono whitespace-nowrap">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 24-oct 01:09 PM</span>
+          <span id="header-total-badge">En vivo · ESPN</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Versión 3.2 · compilada 24-oct 01:09 PM</span>
+        <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap">Versión del 24-oct 01:15 PM</span>
       </div>
 
       <div id="header-equipos-filters" class="hidden space-y-1">
@@ -1387,7 +1387,7 @@ body.theme-light #h2h-modal > div,
 
     const PALABRAS_GENERICAS = ['city', 'united', 'town', 'real', 'sporting', 'athletic', 'atletico', 'racing', 'deportivo', 'deportes', 'inter', 'internacional', 'nacional', 'rovers', 'wanderers', 'albion', 'county', 'rangers', 'olympique', 'borussia', 'juniors', 'sport', 'club', 'universidad', 'union', 'independiente', 'central', 'estudiantes', 'young', 'red', 'star', 'new', 'dynamo', 'dinamo', 'sparta', 'slavia', 'saint', 'st', 'sao'];
     const PALABRAS_RELLENO = ['club', 'fc', 'cd', 'cf', 'sc', 'sd', 'ud', 'ac', 'as', 'rcd', 'afc', 'ca', 'de', 'del', 'la', 'el', 'los', 'las', 'sk', 'fk', 'bk', 'sv', 'vfl', 'vfb', 'ssc', 'us', 'ss'];
-    const GRUPOS_NOMBRES = [["wolverhampton wanderers", "wolves"], ["internacional de bogota", "inter bogota", "la equidad"], ["club atletico de madrid", "atletico madrid", "atletico de madrid"], ["athletic bilbao", "athletic club"], ["paris saint germain", "psg"], ["inter milan", "inter", "internazionale"], ["sporting lisbon", "sporting portugal", "sporting cp"], ["sturm graz", "sk sturm graz"], ["salzburg", "red bull salzburg", "rb salzburg"], ["leipzig", "rb leipzig"], ["dortmund", "borussia dortmund"], ["leverkusen", "bayer leverkusen"], ["monaco", "as monaco"], ["roma", "as roma"], ["milan", "ac milan"], ["fc barcelona", "barcelona"], ["santa fe", "independiente santa fe"], ["atletico junior", "junior"], ["sanfrecce hiroshima", "hiroshima sanfrecce"], ["fc cologne", "koln", "fc koln", "1 fc koln"], ["hamburg sv", "hamburgo sv", "hamburger sv"], ["nice", "niza", "ogc nice"], ["marseille", "olympique marseille", "olympique marsella"], ["stade rennais", "rennes"], ["standard liege", "st lieja", "standard lieja"], ["tokyo verdy 1969", "tokyo verdy"], ["sc freiburg", "friburgo"], ["vfl wolfsburg", "wolfsburgo"], ["strasbourg", "estrasburgo"], ["c d nacional", "nacional madeira"], ["club brugge", "club brujas"], ["cercle brugge ksv", "cercle brugge", "circulo brujas"], ["sint truidense", "st truiden"], ["union st gilloise", "royale union sg"], ["central cordoba santiago del estero", "central cordoba sde"], ["sv elversberg", "elversberg"], ["hertha berlin", "hertha bsc"], ["1 fc nurnberg", "nuremberg"], ["1 fc magdeburg", "magdeburgo"], ["st pauli", "fc st pauli"], ["1 fc heidenheim 1846", "heidenheim"], ["queens park rangers", "qpr"], ["west bromwich albion", "west brom"], ["red star fc 93", "red star fc"], ["deportivo", "rc deportivo", "deportivo la coruna"], ["racing santander", "racing de santander"], ["levante", "levante ud"], ["elche", "elche cf"], ["atletico goianiense", "atletico go"], ["cuiaba", "cuiaba esporte clube"]];
+    const GRUPOS_NOMBRES = [["wolverhampton wanderers", "wolves"], ["internacional de bogota", "inter bogota", "la equidad"], ["club atletico de madrid", "atletico madrid", "atletico de madrid"], ["athletic bilbao", "athletic club"], ["paris saint germain", "psg"], ["inter milan", "inter", "internazionale"], ["sporting lisbon", "sporting portugal", "sporting cp"], ["sturm graz", "sk sturm graz"], ["salzburg", "red bull salzburg", "rb salzburg"], ["leipzig", "rb leipzig"], ["dortmund", "borussia dortmund"], ["leverkusen", "bayer leverkusen"], ["monaco", "as monaco"], ["roma", "as roma"], ["milan", "ac milan"], ["fc barcelona", "barcelona"], ["santa fe", "independiente santa fe"], ["atletico junior", "junior"], ["sanfrecce hiroshima", "hiroshima sanfrecce"], ["fc cologne", "koln", "fc koln", "1 fc koln"], ["hamburg sv", "hamburgo sv", "hamburger sv"], ["nice", "niza", "ogc nice"], ["marseille", "olympique marseille", "olympique marsella"], ["stade rennais", "rennes"], ["standard liege", "st lieja", "standard lieja"], ["tokyo verdy 1969", "tokyo verdy"], ["sc freiburg", "friburgo"], ["vfl wolfsburg", "wolfsburgo"], ["strasbourg", "estrasburgo"], ["c d nacional", "nacional madeira"], ["club brugge", "club brujas"], ["cercle brugge ksv", "cercle brugge", "circulo brujas"], ["sint truidense", "st truiden"], ["union st gilloise", "royale union sg"], ["central cordoba santiago del estero", "central cordoba sde"], ["sv elversberg", "elversberg"], ["hertha berlin", "hertha bsc"], ["1 fc nurnberg", "nuremberg"], ["1 fc magdeburg", "magdeburgo"], ["st pauli", "fc st pauli"], ["1 fc heidenheim 1846", "heidenheim"], ["queens park rangers", "qpr"], ["west bromwich albion", "west brom"], ["red star fc 93", "red star fc"], ["deportivo", "rc deportivo", "deportivo la coruna"], ["racing santander", "racing de santander"], ["borussia monchengladbach", "borussia monchengladba"], ["newell s old boys", "newells old boys"], ["al taawoun", "al taawon"], ["al faisaly", "al faysaly"], ["levante", "levante ud"], ["elche", "elche cf"], ["atletico goianiense", "atletico go"], ["cuiaba", "cuiaba esporte clube"]];
     function teamNamesMatch(tKey, rawName) {
       const c1 = cleanStr(tKey);
       const c2 = cleanStr(rawName);
@@ -1535,7 +1535,7 @@ body.theme-light #h2h-modal > div,
         const now = new Date();
         const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const badge = document.getElementById('header-total-badge');
-        if (badge) badge.innerText = `En Vivo: ${hora} (ESPN)`;
+        if (badge) badge.innerText = `En vivo · ${hora}`;
 
         renderTeamView();
       } catch (e) {
@@ -1700,7 +1700,7 @@ body.theme-light #h2h-modal > div,
       const dStr = d.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' });
       const manStr = new Date(Date.now() + 86400000).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' });
       const h = d.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: 'numeric', minute: '2-digit', hour12: true }).replace(/\s?([ap])\.\s?m\./i, (m, x) => ' ' + x.toUpperCase() + 'M');
-      const dia = dStr === hoyStr ? 'Hoy' : (dStr === manStr ? 'Mañana' : dStr);
+      const dia = dStr === hoyStr ? 'Hoy' : (dStr === manStr ? 'Mañana' : d.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, '').replace(/^./, c => c.toUpperCase()));
       return { dia, h };
     }
 
@@ -1760,8 +1760,8 @@ body.theme-light #h2h-modal > div,
         `<button onclick="HOY.cat='${k}';track('hoy_categoria',{categoria:'${k}'});renderHoy()" class="${chipClase(HOY.cat === k)}">${n}</button>`).join('');
       // chips de ligas (solo las que tienen partidos), selección múltiple
       const codes = Object.keys(DB).filter(c => porLiga[c]);
-      document.getElementById('hoy-chips-ligas').innerHTML = codes.map(c =>
-        `<button onclick="toggleLigaHoy('${c.replace(/'/g, "\'")}')" class="${chipClase(HOY.ligas.has(c))}">${DB[c].flag} ${c} <span class="opacity-70">${porLiga[c]}</span></button>`).join('')
+      document.getElementById('hoy-chips-ligas').innerHTML = (HOY.ligas.size ? [`<button onclick="HOY.ligas.clear();try{localStorage.removeItem('ang_hoy_ligas')}catch(e){};renderHoy()" class="${chipClase(false)} !text-rose-400">✕ Quitar filtro</button>`] : []).concat(codes.map(c =>
+        `<button onclick="toggleLigaHoy('${c.replace(/'/g, "\'")}')" class="${chipClase(HOY.ligas.has(c))}">${DB[c].flag} ${c} <span class="opacity-70">${porLiga[c]}</span></button>`)).join('')
         || `<span class="text-[11px] text-slate-400">${cargando ? 'Cargando…' : (HOY.dia ? 'Sin partidos este día.' : 'Sin partidos en las próximas 24 h.')}</span>`;
 
       let lista = todos;
