@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
   <meta name="anguloneta-version" content="3.2">
-  <meta name="anguloneta-build" content="202610241304">
+  <meta name="anguloneta-build" content="202610241309">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VPLT4E8FD9"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"3.2",debug_mode:/[?&]debug=1/.test(location.search)});</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
@@ -226,9 +226,9 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 24-oct 01:04 PM</span>
+          <span id="header-total-badge">En Vivo: 24-oct 01:09 PM</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Versión 3.2 · compilada 24-oct 01:04 PM</span>
+        <span class="text-[10px] text-slate-400 font-medium">Versión 3.2 · compilada 24-oct 01:09 PM</span>
       </div>
 
       <div id="header-equipos-filters" class="hidden space-y-1">
@@ -260,6 +260,15 @@ body.theme-light #h2h-modal > div,
         <div class="flex items-center justify-between gap-2">
           <div id="hoy-resumen" class="text-xs font-black text-white">Cargando partidos…</div>
           <button onclick="track('hoy_actualizar_manual');cargarHoy(true)" class="text-[11px] font-black text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2.5 py-1 rounded-lg tap-active">↻ Actualizar</button>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="moverDia(-1)" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 border border-slate-700 font-black tap-active" aria-label="Día anterior">‹</button>
+          <label class="relative flex-1 min-w-0">
+            <span id="hoy-fecha-label" class="block text-center text-[12px] font-black text-white bg-slate-950 border border-slate-800 rounded-xl px-2 py-1.5 truncate">📅 Hoy · próximas 24 h</span>
+            <input id="hoy-fecha-input" type="date" onchange="elegirDia(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="Elegir fecha">
+          </label>
+          <button onclick="moverDia(1)" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 border border-slate-700 font-black tap-active" aria-label="Día siguiente">›</button>
+          <button id="hoy-btn-hoy" onclick="elegirDia('')" class="hidden px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[11px] tap-active">Hoy</button>
         </div>
         <div id="hoy-chips-cat" class="flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-black"></div>
         <div id="hoy-chips-ligas" class="flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-bold"></div>
@@ -1539,7 +1548,7 @@ body.theme-light #h2h-modal > div,
     // ==========================================
     // PESTAÑA "HOY": próximas 24 h + EN VIVO (ESPN, desde el celular)
     // ==========================================
-    const HOY = { partidos: [], cat: 'ALL', ligas: new Set(), soloVivo: false, ultima: null, tab: 'hoy' };
+    const HOY = { dia: null, pend: false, partidos: [], cat: 'ALL', ligas: new Set(), soloVivo: false, ultima: null, tab: 'hoy' };
     const SLUGS_ESPN = {"COL": "col.1", "ARG": "arg.1", "BRA": "bra.1", "CHI": "chi.1", "URU": "uru.1", "ECU": "ecu.1", "PER": "per.1", "PAR": "par.1", "BOL": "bol.1", "MX": "mex.1", "MLS": "usa.1", "LALIGA": "esp.1", "PREMIER": "eng.1", "SERIE A": "ita.1", "ALEM": "ger.1", "LIGUE 1": "fra.1", "PORT": "por.1", "TUR": "tur.1", "HOLA": "ned.1", "BELG": "bel.1", "SAR A": "ksa.1", "JAP": "jpn.1", "IND": "idn.1", "COL B": "col.2", "BRA B": "bra.2", "ARG B": "arg.2", "MX B": "mex.2", "LALIGA B": "esp.2", "SHIP": "eng.2", "SERIE B": "ita.2", "ALEM 2": "ger.2", "LIGUE 2": "fra.2", "HOLA 2": "ned.2", "ENG 3": "eng.3", "UCL": "uefa.champions", "LIB": "conmebol.libertadores", "SUD": "conmebol.sudamericana"};
     const SIN_ESPN = ['COL B', 'IND'];   // ESPN no las sirve: se usa el calendario guardado (sin marcador en vivo)
     try { const g = JSON.parse(localStorage.getItem('ang_hoy_ligas') || '[]'); if (Array.isArray(g)) g.forEach(x => HOY.ligas.add(x)); } catch (e) {}
@@ -1609,9 +1618,17 @@ body.theme-light #h2h-modal > div,
       if (hoyCargando) return;
       if (!forzar && HOY.ultima && Date.now() - HOY.ultima < 45000) { renderHoy(); return; }
       hoyCargando = true;
+      const diaCarga = HOY.dia;
       const now = new Date();
-      const dias = [new Date(now), new Date(now.getTime() + 86400000)];
-      if (now.getHours() < 4) dias.unshift(new Date(now.getTime() - 86400000));   // partidos en vivo que empezaron "ayer"
+      let dias;
+      if (diaCarga) {
+        const [yy, mm, dd] = diaCarga.split('-').map(Number);
+        const base = new Date(yy, mm - 1, dd, 12);
+        dias = [base, new Date(base.getTime() + 86400000)];      // ESPN agrupa por hora de EE.UU.: el día elegido y el siguiente
+      } else {
+        dias = [new Date(now), new Date(now.getTime() + 86400000)];
+        if (now.getHours() < 4) dias.unshift(new Date(now.getTime() - 86400000));   // partidos en vivo que empezaron "ayer"
+      }
       const tareas = [];
       for (const [code, slug] of Object.entries(SLUGS_ESPN)) {
         if (!DB[code] || SIN_ESPN.includes(code)) continue;
@@ -1624,9 +1641,10 @@ body.theme-light #h2h-modal > div,
         (j.events || []).forEach(ev => { const p = eventoAPartido(code, ev); if (p) mapa.set(p.id, p); });
       });
       SIN_ESPN.forEach(code => { if (DB[code]) partidosGuardados(code).forEach(p => mapa.set(p.id, p)); });
+      hoyCargando = false;
+      if (diaCarga !== HOY.dia || HOY.pend) { HOY.pend = false; cargarHoy(true); return; }   // cambió el día mientras cargaba
       HOY.partidos = [...mapa.values()];
       HOY.ultima = Date.now();
-      hoyCargando = false;
       const fallos = res.filter(r => !r.j).length;
       if (fallos > 0) track('espn_fallos', { cantidad: fallos, de: res.length });
       renderHoy();
@@ -1634,7 +1652,28 @@ body.theme-light #h2h-modal > div,
         track('hoy_vista', { cantidad: v.length, en_vivo: v.filter(p => p.vivo).length, ligas_con_partido: new Set(v.map(p => p.liga)).size }); }
     }
 
+    function diaCol(ts) { return new Date(ts).toLocaleDateString('en-CA', { timeZone: 'America/Bogota' }); }
+
+    function hoyCol() { return diaCol(Date.now()); }
+
+    function elegirDia(v) {
+      if (v && v === hoyCol()) v = '';
+      HOY.dia = v || null;
+      const dif = v ? Math.round((new Date(v + 'T12:00:00') - new Date(hoyCol() + 'T12:00:00')) / 86400000) : 0;
+      track('hoy_fecha', { fecha: v || 'hoy', dias_desde_hoy: dif });
+      HOY.partidos = []; HOY.ultima = null; HOY.cat = 'ALL';
+      renderHoy();
+      cargarHoy(true);
+    }
+
+    function moverDia(n) {
+      const base = new Date((HOY.dia || hoyCol()) + 'T12:00:00');
+      base.setDate(base.getDate() + n);
+      elegirDia(base.toLocaleDateString('en-CA'));
+    }
+
     function enVentana(p) {
+      if (HOY.dia) return diaCol(p.ts) === HOY.dia && p.nombre !== 'STATUS_POSTPONED' && p.nombre !== 'STATUS_CANCELED';
       const ahora = Date.now();
       if (p.estado === 'in') return true;
       if (p.nombre === 'STATUS_POSTPONED' || p.nombre === 'STATUS_CANCELED') return false;
@@ -1706,6 +1745,11 @@ body.theme-light #h2h-modal > div,
 
     function renderHoy() {
       const todos = HOY.partidos.filter(enVentana);
+      const cargando = !HOY.ultima;
+      const lblDia = HOY.dia ? new Date(HOY.dia + 'T12:00:00').toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+      document.getElementById('hoy-fecha-label').innerText = HOY.dia ? '📅 ' + lblDia : '📅 Hoy · próximas 24 h';
+      document.getElementById('hoy-fecha-input').value = HOY.dia || hoyCol();
+      document.getElementById('hoy-btn-hoy').classList.toggle('hidden', !HOY.dia);
       const nVivo = todos.filter(p => p.vivo).length;
       const porLiga = {};
       todos.forEach(p => porLiga[p.liga] = (porLiga[p.liga] || 0) + 1);
@@ -1718,7 +1762,7 @@ body.theme-light #h2h-modal > div,
       const codes = Object.keys(DB).filter(c => porLiga[c]);
       document.getElementById('hoy-chips-ligas').innerHTML = codes.map(c =>
         `<button onclick="toggleLigaHoy('${c.replace(/'/g, "\'")}')" class="${chipClase(HOY.ligas.has(c))}">${DB[c].flag} ${c} <span class="opacity-70">${porLiga[c]}</span></button>`).join('')
-        || '<span class="text-[11px] text-slate-400">Sin partidos en las próximas 24 h.</span>';
+        || `<span class="text-[11px] text-slate-400">${cargando ? 'Cargando…' : (HOY.dia ? 'Sin partidos este día.' : 'Sin partidos en las próximas 24 h.')}</span>`;
 
       let lista = todos;
       if (HOY.cat === 'VIVO') lista = lista.filter(p => p.vivo);
@@ -1743,11 +1787,11 @@ body.theme-light #h2h-modal > div,
         const filas = grupos[c].sort((x, y) => (y.vivo - x.vivo) || (x.ts - y.ts)).map(tarjetaHoy).join('');
         const nota = SIN_ESPN.includes(c) ? ' · sin marcador en vivo' : '';
         return `<section class="space-y-1.5"><div class="text-[11px] font-black uppercase tracking-wider text-emerald-400 px-1">${l.flag} ${l.name}<span class="text-slate-500 normal-case font-medium">${nota}</span></div>${filas}</section>`;
-      }).join('') || (HOY.ultima ? '<div class="card-box bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center text-sm text-slate-400 font-bold">No hay partidos con estos filtros en las próximas 24 horas.</div>' : '');
+      }).join('') || (HOY.ultima ? `<div class="card-box bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center text-sm text-slate-400 font-bold">No hay partidos con estos filtros ${HOY.dia ? 'ese día' : 'en las próximas 24 horas'}.</div>` : '');
     }
 
     // refresco automático del marcador cada minuto mientras se mira la pestaña Hoy
-    setInterval(() => { if (HOY.tab === 'hoy' && !document.hidden) cargarHoy(true); }, 60000);
+    setInterval(() => { if (HOY.tab === 'hoy' && !document.hidden && !HOY.dia) cargarHoy(true); }, 60000);
 
     // Auto-actualización: si en el servidor hay una compilación más nueva que la abierta, se recarga sola
     async function revisarVersionNueva() {
