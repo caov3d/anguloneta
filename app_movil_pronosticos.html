@@ -8,10 +8,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
-  <meta name="anguloneta-version" content="2.8">
-  <meta name="anguloneta-build" content="202610230950">
+  <meta name="anguloneta-version" content="2.9">
+  <meta name="anguloneta-build" content="202610240929">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VPLT4E8FD9"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"2.8"});</script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"2.9"});</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -189,7 +189,7 @@ body.theme-light #h2h-modal > div,
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
               <h1 class="text-lg sm:text-xl font-black tracking-tight text-white uppercase truncate">ANGULONETA</h1>
-              <span class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded-full font-black">v2.8</span>
+              <span class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded-full font-black">v2.9</span>
             </div>
             <p class="text-[11px] text-slate-400 font-medium truncate">37 Ligas y Torneos · En Curso</p>
           </div>
@@ -220,11 +220,12 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 23-oct 09:50 AM</span>
+          <span id="header-total-badge">En Vivo: 24-oct 09:29 AM</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Versión 2.8 · compilada 23-oct 09:50 AM</span>
+        <span class="text-[10px] text-slate-400 font-medium">Versión 2.9 · compilada 24-oct 09:29 AM</span>
       </div>
 
+      <div id="header-equipos-filters" class="hidden space-y-1">
       <!-- SELECTOR RÁPIDO DE CATEGORÍA (TODAS, 1ª DIV, 2ª DIV, COPAS) -->
       <div class="flex items-center gap-1.5 pt-1 overflow-x-auto no-scrollbar text-[10px] font-black">
         <button id="btn-cat-all" onclick="setCategoryTab('ALL')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white shadow-sm tap-active transition whitespace-nowrap">
@@ -244,7 +245,30 @@ body.theme-light #h2h-modal > div,
       <!-- SELECTOR DESLIZABLE RÁPIDO DE LIGAS CON BANDERAS -->
       <div id="league-pill-bar" class="flex gap-1.5 overflow-x-auto pt-1 pb-0.5 no-scrollbar text-xs font-bold">
       </div>
+      </div>
     </header>
+
+    <!-- PESTAÑAS PRINCIPALES -->
+    <nav class="grid grid-cols-2 gap-1.5 text-sm font-black">
+      <button id="tab-hoy" onclick="setMainTab('hoy')" class="py-2.5 rounded-2xl tap-active transition">⚽ Hoy · 24 h</button>
+      <button id="tab-equipos" onclick="setMainTab('equipos')" class="py-2.5 rounded-2xl tap-active transition">📊 Equipos</button>
+    </nav>
+
+    <!-- VISTA HOY: PARTIDOS DE LAS PRÓXIMAS 24 HORAS + EN VIVO -->
+    <div id="view-hoy" class="space-y-3">
+      <section class="card-box bg-slate-900 border border-slate-800 rounded-3xl p-3.5 shadow-xl space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div id="hoy-resumen" class="text-xs font-black text-white">Cargando partidos…</div>
+          <button onclick="cargarHoy(true)" class="text-[11px] font-black text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2.5 py-1 rounded-lg tap-active">↻ Actualizar</button>
+        </div>
+        <div id="hoy-chips-cat" class="flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-black"></div>
+        <div id="hoy-chips-ligas" class="flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-bold"></div>
+        <p id="hoy-actualizado" class="text-[10px] text-slate-400 font-medium"></p>
+      </section>
+      <div id="hoy-lista" class="space-y-3"></div>
+    </div>
+
+    <div id="view-equipos" class="hidden space-y-3.5">
 
     <!-- SELECTORES INTERACTIVOS Y FILTROS -->
     <section class="card-box bg-slate-900 border border-slate-800 rounded-3xl p-3.5 sm:p-4 shadow-xl space-y-3">
@@ -392,6 +416,8 @@ body.theme-light #h2h-modal > div,
         </div>
       </div>
     </section>
+
+    </div><!-- /view-equipos -->
 
   </div>
 
@@ -1408,6 +1434,215 @@ body.theme-light #h2h-modal > div,
         if (icon) icon.classList.remove('animate-spin');
       }
     }
+
+    // ==========================================
+    // PESTAÑA "HOY": próximas 24 h + EN VIVO (ESPN, desde el celular)
+    // ==========================================
+    const HOY = { partidos: [], cat: 'ALL', ligas: new Set(), soloVivo: false, ultima: null, tab: 'hoy' };
+    const SLUGS_ESPN = {"COL": "col.1", "ARG": "arg.1", "BRA": "bra.1", "CHI": "chi.1", "URU": "uru.1", "ECU": "ecu.1", "PER": "per.1", "PAR": "par.1", "BOL": "bol.1", "MX": "mex.1", "MLS": "usa.1", "LALIGA": "esp.1", "PREMIER": "eng.1", "SERIE A": "ita.1", "ALEM": "ger.1", "LIGUE 1": "fra.1", "PORT": "por.1", "TUR": "tur.1", "HOLA": "ned.1", "BELG": "bel.1", "SAR A": "ksa.1", "JAP": "jpn.1", "IND": "idn.1", "COL B": "col.2", "BRA B": "bra.2", "ARG B": "arg.2", "MX B": "mex.2", "LALIGA B": "esp.2", "SHIP": "eng.2", "SERIE B": "ita.2", "ALEM 2": "ger.2", "LIGUE 2": "fra.2", "HOLA 2": "ned.2", "ENG 3": "eng.3", "UCL": "uefa.champions", "LIB": "conmebol.libertadores", "SUD": "conmebol.sudamericana"};
+    const SIN_ESPN = ['COL B', 'IND'];   // ESPN no las sirve: se usa el calendario guardado (sin marcador en vivo)
+    try { const g = JSON.parse(localStorage.getItem('ang_hoy_ligas') || '[]'); if (Array.isArray(g)) g.forEach(x => HOY.ligas.add(x)); } catch (e) {}
+
+    function setMainTab(t) {
+      HOY.tab = t;
+      track('pestana', { pestana: t });
+      document.getElementById('view-hoy').classList.toggle('hidden', t !== 'hoy');
+      document.getElementById('view-equipos').classList.toggle('hidden', t !== 'equipos');
+      document.getElementById('header-equipos-filters').classList.toggle('hidden', t !== 'equipos');
+      ['hoy', 'equipos'].forEach(id => {
+        const b = document.getElementById('tab-' + id);
+        const on = (id === t);
+        b.className = 'py-2.5 rounded-2xl tap-active transition ' + (on
+          ? 'bg-emerald-600 text-white shadow-md'
+          : (isLightMode() ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-800 text-slate-300 border border-slate-700'));
+      });
+      if (t === 'hoy') cargarHoy(false);
+    }
+
+    function ymdLocal(d) {
+      return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    }
+
+    async function espnDia(slug, ymd) {
+      for (const host of ['site.api.espn.com', 'site.web.api.espn.com']) {
+        try {
+          const r = await fetch(`https://${host}/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymd}`);
+          if (r.ok) return await r.json();
+        } catch (e) {}
+      }
+      return null;
+    }
+
+    function eventoAPartido(code, ev) {
+      const comp = (ev.competitions && ev.competitions[0]) || {};
+      const cs = comp.competitors || [];
+      if (cs.length < 2) return null;
+      const h = cs.find(c => c.homeAway === 'home') || cs[0];
+      const a = cs.find(c => c.homeAway === 'away') || cs[1];
+      const st = (ev.status || comp.status || {});
+      const tp = st.type || {};
+      return {
+        id: code + ':' + ev.id, liga: code, ts: new Date(ev.date).getTime(),
+        home: (h.team && h.team.displayName) || '', away: (a.team && a.team.displayName) || '',
+        hs: h.score != null ? parseInt(h.score) : null, as: a.score != null ? parseInt(a.score) : null,
+        estado: tp.state || 'pre',              // pre | in | post
+        detalle: tp.shortDetail || '', nombre: tp.name || '', vivo: tp.state === 'in'
+      };
+    }
+
+    function partidosGuardados(code) {
+      const out = [], vistos = new Set();
+      const nm = (DB[code] || {}).next_matches || {};
+      for (const [team, lst] of Object.entries(nm)) {
+        for (const m of lst) {
+          if (m.cond !== 'LOCAL' || !m.dt) continue;
+          const k = m.event_id || (team + m.dt);
+          if (vistos.has(k)) continue; vistos.add(k);
+          out.push({ id: code + ':g' + k, liga: code, ts: new Date(m.dt).getTime(), home: team, away: m.rival_matched || m.rival,
+                     hs: null, as: null, estado: 'pre', detalle: '', nombre: '', vivo: false, guardado: true });
+        }
+      }
+      return out;
+    }
+
+    let hoyCargando = false;
+    async function cargarHoy(forzar) {
+      if (hoyCargando) return;
+      if (!forzar && HOY.ultima && Date.now() - HOY.ultima < 45000) { renderHoy(); return; }
+      hoyCargando = true;
+      const now = new Date();
+      const dias = [new Date(now), new Date(now.getTime() + 86400000)];
+      if (now.getHours() < 4) dias.unshift(new Date(now.getTime() - 86400000));   // partidos en vivo que empezaron "ayer"
+      const tareas = [];
+      for (const [code, slug] of Object.entries(SLUGS_ESPN)) {
+        if (!DB[code] || SIN_ESPN.includes(code)) continue;
+        for (const d of dias) tareas.push(espnDia(slug, ymdLocal(d)).then(j => ({ code, j })));
+      }
+      const res = await Promise.all(tareas);
+      const mapa = new Map();
+      res.forEach(({ code, j }) => {
+        if (!j) return;
+        (j.events || []).forEach(ev => { const p = eventoAPartido(code, ev); if (p) mapa.set(p.id, p); });
+      });
+      SIN_ESPN.forEach(code => { if (DB[code]) partidosGuardados(code).forEach(p => mapa.set(p.id, p)); });
+      HOY.partidos = [...mapa.values()];
+      HOY.ultima = Date.now();
+      hoyCargando = false;
+      renderHoy();
+    }
+
+    function enVentana(p) {
+      const ahora = Date.now();
+      if (p.estado === 'in') return true;
+      if (p.nombre === 'STATUS_POSTPONED' || p.nombre === 'STATUS_CANCELED') return false;
+      if (p.estado === 'post') return p.ts >= ahora - 6 * 3600000;                 // terminados hace menos de 6 h
+      return p.ts >= ahora - 20 * 60000 && p.ts <= ahora + 24 * 3600000;            // próximos 24 h
+    }
+
+    function toggleLigaHoy(code) {
+      if (HOY.ligas.has(code)) HOY.ligas.delete(code); else HOY.ligas.add(code);
+      try { localStorage.setItem('ang_hoy_ligas', JSON.stringify([...HOY.ligas])); } catch (e) {}
+      track('hoy_liga', { liga: code });
+      renderHoy();
+    }
+
+    function chipClase(on) {
+      return 'px-3 py-1.5 rounded-xl whitespace-nowrap tap-active transition ' + (on
+        ? 'bg-emerald-600 text-white shadow-md font-black'
+        : (isLightMode() ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-800 text-slate-300 border border-slate-700'));
+    }
+
+    function horaCol(ts) {
+      const d = new Date(ts);
+      const hoyStr = new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota' });
+      const dStr = d.toLocaleDateString('es-CO', { timeZone: 'America/Bogota' });
+      const manStr = new Date(Date.now() + 86400000).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' });
+      const h = d.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: 'numeric', minute: '2-digit', hour12: true }).replace(/\s?([ap])\.\s?m\./i, (m, x) => ' ' + x.toUpperCase() + 'M');
+      const dia = dStr === hoyStr ? 'Hoy' : (dStr === manStr ? 'Mañana' : dStr);
+      return { dia, h };
+    }
+
+    function tarjetaHoy(p) {
+      const t = horaCol(p.ts);
+      let centro, estado;
+      if (p.estado === 'pre') {
+        centro = `<div class="text-sm font-black text-white font-mono">${t.h}</div>`;
+        estado = `<div class="text-[10px] text-slate-400 font-bold">${t.dia}</div>`;
+      } else {
+        centro = `<div class="text-lg font-black font-mono ${p.vivo ? 'text-rose-400' : 'text-white'}">${p.hs ?? 0} - ${p.as ?? 0}</div>`;
+        estado = p.vivo
+          ? `<div class="text-[10px] font-black text-rose-400 flex items-center justify-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>${p.detalle || 'EN VIVO'}</div>`
+          : `<div class="text-[10px] text-slate-400 font-bold">${p.detalle || 'Final'}</div>`;
+      }
+      const clickable = !!(buscarClave(p.liga, p.home) || buscarClave(p.liga, p.away));
+      return `<div ${clickable ? `onclick="abrirDesdeHoy('${p.id.replace(/'/g, "\'")}')"` : ''} class="card-box bg-slate-900 border ${p.vivo ? 'border-rose-500/50' : 'border-slate-800'} rounded-2xl px-3 py-2.5 grid grid-cols-[1fr_84px_1fr] items-center gap-2 ${clickable ? 'tap-active cursor-pointer' : ''}">
+        <div class="text-xs font-black text-white text-right leading-tight">${p.home}</div>
+        <div class="text-center whitespace-nowrap">${centro}${estado}</div>
+        <div class="text-xs font-black text-white text-left leading-tight">${p.away}</div>
+      </div>`;
+    }
+
+    function buscarClave(code, nombre) {
+      const l = DB[code]; if (!l || !nombre) return null;
+      return Object.keys(l.teams).find(k => teamNamesMatch(k, nombre)) || null;
+    }
+
+    function abrirDesdeHoy(id) {
+      const p = HOY.partidos.find(x => x.id === id); if (!p) return;
+      const hk = buscarClave(p.liga, p.home), ak = buscarClave(p.liga, p.away);
+      const t = horaCol(p.ts);
+      if (hk) { currentLeague = p.liga; currentTeam = hk;
+        openH2H({ rival: ak || p.away, rival_matched: ak || p.away, cond: 'LOCAL', date: `${t.dia} ${t.h}` });
+      } else if (ak) { currentLeague = p.liga; currentTeam = ak;
+        openH2H({ rival: p.home, rival_matched: p.home, cond: 'VISITANTE', date: `${t.dia} ${t.h}` });
+      }
+    }
+
+    function renderHoy() {
+      const todos = HOY.partidos.filter(enVentana);
+      const nVivo = todos.filter(p => p.vivo).length;
+      const porLiga = {};
+      todos.forEach(p => porLiga[p.liga] = (porLiga[p.liga] || 0) + 1);
+
+      // chips de categoría
+      const cats = [['ALL', 'Todas'], ['VIVO', `🔴 En vivo (${nVivo})`], ['1ª', '🏆 1ª'], ['2ª', '🥈 2ª/3ª'], ['Copas', '⭐ Copas']];
+      document.getElementById('hoy-chips-cat').innerHTML = cats.map(([k, n]) =>
+        `<button onclick="HOY.cat='${k}';renderHoy()" class="${chipClase(HOY.cat === k)}">${n}</button>`).join('');
+      // chips de ligas (solo las que tienen partidos), selección múltiple
+      const codes = Object.keys(DB).filter(c => porLiga[c]);
+      document.getElementById('hoy-chips-ligas').innerHTML = codes.map(c =>
+        `<button onclick="toggleLigaHoy('${c.replace(/'/g, "\'")}')" class="${chipClase(HOY.ligas.has(c))}">${DB[c].flag} ${c} <span class="opacity-70">${porLiga[c]}</span></button>`).join('')
+        || '<span class="text-[11px] text-slate-400">Sin partidos en las próximas 24 h.</span>';
+
+      let lista = todos;
+      if (HOY.cat === 'VIVO') lista = lista.filter(p => p.vivo);
+      else if (HOY.cat !== 'ALL') lista = lista.filter(p => DB[p.liga].cat === HOY.cat);
+      const activas = [...HOY.ligas].filter(c => porLiga[c]);
+      if (activas.length) lista = lista.filter(p => activas.includes(p.liga));
+
+      document.getElementById('hoy-resumen').innerText = `${lista.length} partidos · ${lista.filter(p => p.vivo).length} en vivo`;
+      const hora = HOY.ultima ? new Date(HOY.ultima).toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' }) : '';
+      document.getElementById('hoy-actualizado').innerText = hora
+        ? `Actualizado ${hora} · el marcador se refresca solo cada minuto · horas de Colombia` + (activas.length ? ` · filtrando ${activas.length} liga(s)` : '') : '';
+
+      const grupos = {};
+      lista.forEach(p => (grupos[p.liga] = grupos[p.liga] || []).push(p));
+      const orden = Object.keys(grupos).sort((a, b) => {
+        const va = grupos[a].some(p => p.vivo) ? 0 : 1, vb = grupos[b].some(p => p.vivo) ? 0 : 1;
+        if (va !== vb) return va - vb;
+        return Math.min(...grupos[a].map(p => p.ts)) - Math.min(...grupos[b].map(p => p.ts));
+      });
+      document.getElementById('hoy-lista').innerHTML = orden.map(c => {
+        const l = DB[c];
+        const filas = grupos[c].sort((x, y) => (y.vivo - x.vivo) || (x.ts - y.ts)).map(tarjetaHoy).join('');
+        const nota = SIN_ESPN.includes(c) ? ' · sin marcador en vivo' : '';
+        return `<section class="space-y-1.5"><div class="text-[11px] font-black uppercase tracking-wider text-emerald-400 px-1">${l.flag} ${l.name}<span class="text-slate-500 normal-case font-medium">${nota}</span></div>${filas}</section>`;
+      }).join('') || (HOY.ultima ? '<div class="card-box bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center text-sm text-slate-400 font-bold">No hay partidos con estos filtros en las próximas 24 horas.</div>' : '');
+    }
+
+    // refresco automático del marcador cada minuto mientras se mira la pestaña Hoy
+    setInterval(() => { if (HOY.tab === 'hoy' && !document.hidden) cargarHoy(true); }, 60000);
+
     // Auto-actualización: si en el servidor hay una compilación más nueva que la abierta, se recarga sola
     async function revisarVersionNueva() {
       try {
@@ -1430,6 +1665,7 @@ body.theme-light #h2h-modal > div,
     // Iniciar al cargar y refrescar automáticamente en vivo cada 2 minutos
     document.addEventListener('DOMContentLoaded', () => {
       init();
+      setMainTab('hoy');
       setTimeout(liveSyncFromESPN, 800);
       setInterval(liveSyncFromESPN, 120000);
     });
