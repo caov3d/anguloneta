@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
   <meta name="anguloneta-version" content="3.2">
-  <meta name="anguloneta-build" content="202610241317">
+  <meta name="anguloneta-build" content="202610241329">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VPLT4E8FD9"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"3.2",debug_mode:/[?&]debug=1/.test(location.search)});</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
@@ -228,7 +228,7 @@ body.theme-light #h2h-modal > div,
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span id="header-total-badge">En vivo · ESPN</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap">Versión del 24-oct 01:17 PM</span>
+        <span class="text-[10px] text-slate-400 font-medium whitespace-nowrap">Versión del 24-oct 01:29 PM</span>
       </div>
 
       <div id="header-equipos-filters" class="hidden space-y-1">
@@ -282,8 +282,8 @@ body.theme-light #h2h-modal > div,
     <!-- SELECTORES INTERACTIVOS Y FILTROS -->
     <section class="card-box bg-slate-900 border border-slate-800 rounded-3xl p-3.5 sm:p-4 shadow-xl space-y-3">
       
-      <!-- 1. SELECTOR DESPLEGABLE DE LIGA -->
-      <div>
+      <!-- 1. SELECTOR DE LIGA (oculto: la liga se elige con los botones de arriba; se conserva porque el código lo usa) -->
+      <div class="hidden">
         <label class="block text-[11px] font-black text-slate-400 mb-1.5 uppercase tracking-wider">
           1. Liga Seleccionada:
         </label>
@@ -299,10 +299,10 @@ body.theme-light #h2h-modal > div,
       <!-- 2. SELECTOR DE EQUIPO (CON BUSCADOR RÁPIDO) -->
       <div>
         <label class="block text-[11px] font-black text-slate-400 mb-1.5 uppercase tracking-wider">
-          2. Equipo (Escribe o Selecciona):
+          Equipo
         </label>
         <div class="space-y-2">
-          <input type="text" id="input-team-search" oninput="onTeamFilter()" placeholder="Escribe para buscar (ej: Nacional, Madrid, Boca...)" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-3.5 py-2 text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition shadow-inner">
+          <input type="text" id="input-team-search" oninput="onTeamFilter()" placeholder="🔍 Buscar equipo (Nacional, Madrid, Boca…)" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-3.5 py-2 text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition shadow-inner">
           <div class="relative">
             <select id="select-team" onchange="onTeamSelect()" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-3.5 py-2.5 text-sm font-black text-emerald-400 focus:outline-none focus:border-emerald-500 appearance-none shadow-inner cursor-pointer">
             </select>
