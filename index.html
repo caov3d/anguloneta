@@ -8,10 +8,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0F172A">
-  <meta name="anguloneta-version" content="2.9">
-  <meta name="anguloneta-build" content="202610240929">
+  <meta name="anguloneta-version" content="3.0">
+  <meta name="anguloneta-build" content="202610240939">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VPLT4E8FD9"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"2.9"});</script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-VPLT4E8FD9",{app_version:"3.0",debug_mode:/[?&]debug=1/.test(location.search)});</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2224%22 fill=%22%2310B981%22/><path d=%22M8 29h36v8c0 2-2 3-4 3H12c-2 0-4-1-4-3v-8z%22 fill=%22%230F172A%22/><path d=%22M11 26l3-10h24l4 10H11z%22 fill=%22%231E293B%22/><circle cx=%2216%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2236%22 cy=%2238%22 r=%224%22 fill=%22%23E2E8F0%22/><circle cx=%2235%22 cy=%2214%22 r=%227%22 fill=%22%23FFFFFF%22 stroke=%22%230F172A%22 stroke-width=%221.5%22/></svg>">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -189,7 +189,7 @@ body.theme-light #h2h-modal > div,
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
               <h1 class="text-lg sm:text-xl font-black tracking-tight text-white uppercase truncate">ANGULONETA</h1>
-              <span class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded-full font-black">v2.9</span>
+              <span class="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded-full font-black">v3.0</span>
             </div>
             <p class="text-[11px] text-slate-400 font-medium truncate">37 Ligas y Torneos · En Curso</p>
           </div>
@@ -220,9 +220,9 @@ body.theme-light #h2h-modal > div,
       <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800/80">
         <div class="flex items-center gap-1.5 text-emerald-400 font-bold font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="header-total-badge">En Vivo: 24-oct 09:29 AM</span>
+          <span id="header-total-badge">En Vivo: 24-oct 09:39 AM</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Versión 2.9 · compilada 24-oct 09:29 AM</span>
+        <span class="text-[10px] text-slate-400 font-medium">Versión 3.0 · compilada 24-oct 09:39 AM</span>
       </div>
 
       <div id="header-equipos-filters" class="hidden space-y-1">
@@ -259,7 +259,7 @@ body.theme-light #h2h-modal > div,
       <section class="card-box bg-slate-900 border border-slate-800 rounded-3xl p-3.5 shadow-xl space-y-2.5">
         <div class="flex items-center justify-between gap-2">
           <div id="hoy-resumen" class="text-xs font-black text-white">Cargando partidos…</div>
-          <button onclick="cargarHoy(true)" class="text-[11px] font-black text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2.5 py-1 rounded-lg tap-active">↻ Actualizar</button>
+          <button onclick="track('hoy_actualizar_manual');cargarHoy(true)" class="text-[11px] font-black text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2.5 py-1 rounded-lg tap-active">↻ Actualizar</button>
         </div>
         <div id="hoy-chips-cat" class="flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-black"></div>
         <div id="hoy-chips-ligas" class="flex gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-bold"></div>
@@ -622,6 +622,7 @@ body.theme-light #h2h-modal > div,
 
     function onLeagueChange(preferredTeam) {
       currentLeague = document.getElementById('select-league').value;
+      MED.ligas.add(currentLeague);
       track('liga_elegida', { liga: currentLeague });
       updateLeaguePills();
       document.getElementById('input-team-search').value = '';
@@ -867,7 +868,8 @@ body.theme-light #h2h-modal > div,
     }
 
     function openH2H(matchInfo) {
-      track('h2h_abrir', { liga: currentLeague });
+      MED.h2h++; MED.h2hT = Date.now();
+      track('h2h_abrir', { liga: currentLeague, equipo: currentTeam });
       const lData = DB[currentLeague];
       const rivalName = matchInfo.rival_matched || matchInfo.rival;
       const isHome = (matchInfo.cond === 'LOCAL');
@@ -984,7 +986,81 @@ body.theme-light #h2h-modal > div,
       document.getElementById('h2h-modal').classList.remove('hidden');
     }
 
-    function track(nombre, datos) { try { if (typeof gtag === 'function') gtag('event', nombre, datos || {}); } catch (e) {} }
+    // ==========================================
+    // MEDICIÓN (Google Analytics 4): todo anónimo, sin datos personales
+    // ==========================================
+    const MED = { t0: Date.now(), activo: 0, acciones: 0, ultimaAct: Date.now(), porPantalla: {}, segVivo: 0,
+                  silencio: false, pantallas: new Set(), ligas: new Set(), partidos: 0, h2h: 0, scrollMax: 0, scrollHitos: {}, hitos: {}, fin: false, h2hT: 0 };
+    function track(nombre, datos) {
+      try {
+        if (MED.silencio) return;
+        MED.acciones++;
+        const d = Object.assign({ pantalla: (typeof HOY !== 'undefined' ? HOY.tab : '') }, datos || {});
+        if (typeof gtag === 'function') gtag('event', nombre, d);
+      } catch (e) {}
+    }
+    function medIniciar() {
+      let uid = '', visitas = 1, nueva = true, diasDistintos = 1;
+      try {
+        uid = localStorage.getItem('ang_uid') || '';
+        nueva = !uid;
+        if (!uid) { uid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (String(Math.random()).slice(2) + Date.now()); localStorage.setItem('ang_uid', uid); }
+        visitas = parseInt(localStorage.getItem('ang_visitas') || '0') + 1; localStorage.setItem('ang_visitas', String(visitas));
+        const hoy = new Date().toISOString().slice(0, 10);
+        const dias = JSON.parse(localStorage.getItem('ang_dias') || '[]');
+        if (!dias.includes(hoy)) { dias.push(hoy); localStorage.setItem('ang_dias', JSON.stringify(dias.slice(-60))); }
+        diasDistintos = dias.length;
+      } catch (e) {}
+      const instalada = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone ? 'si' : 'no';
+      try {
+        gtag('set', { user_id: uid });
+        gtag('set', 'user_properties', {
+          tipo_usuario: nueva ? 'nuevo' : (visitas >= 5 ? 'fiel' : 'recurrente'),
+          visitas_acumuladas: visitas, dias_distintos: diasDistintos, app_instalada: instalada
+        });
+      } catch (e) {}
+      track('sesion_inicio', { visita_n: visitas, dias_distintos: diasDistintos, instalada: instalada,
+        ancho: window.innerWidth, alto: window.innerHeight, idioma: (navigator.language || '').slice(0, 8),
+        conexion: (navigator.connection && navigator.connection.effectiveType) || '', zona: (Intl.DateTimeFormat().resolvedOptions().timeZone || '').slice(0, 30) });
+
+      ['click', 'touchstart', 'keydown', 'scroll'].forEach(ev => window.addEventListener(ev, () => { MED.ultimaAct = Date.now(); }, { passive: true }));
+      // reloj de tiempo ACTIVO (pestaña visible y con actividad en los últimos 30 s)
+      setInterval(() => {
+        if (document.hidden || Date.now() - MED.ultimaAct > 30000) return;
+        MED.activo += 5;
+        const pant = (typeof HOY !== 'undefined' ? HOY.tab : '?');
+        MED.porPantalla[pant] = (MED.porPantalla[pant] || 0) + 5;
+        if (pant === 'hoy' && typeof HOY !== 'undefined' && HOY.partidos.some(p => p.vivo && enVentana(p))) MED.segVivo += 5;
+        [30, 60, 120, 180, 300, 600, 900].forEach(h => { if (MED.activo >= h && !MED.hitos[h]) { MED.hitos[h] = 1; track('hito_tiempo', { segundos_hito: h }); } });
+      }, 5000);
+      // profundidad de scroll
+      window.addEventListener('scroll', () => {
+        const alto = document.documentElement.scrollHeight - window.innerHeight;
+        if (alto < 200) return;
+        const pct = Math.round(window.scrollY / alto * 100);
+        MED.scrollMax = Math.max(MED.scrollMax, pct);
+        [25, 50, 75, 100].forEach(h => { const k = h + ':' + (typeof HOY !== 'undefined' ? HOY.tab : ''); if (pct >= h && !MED.scrollHitos[k]) { MED.scrollHitos[k] = 1; track('scroll_profundo', { porcentaje: h }); } });
+      }, { passive: true });
+      // cierre de sesión: resumen con todo lo que hizo
+      const cerrar = () => {
+        if (MED.fin && !document.hidden) return;
+        MED.fin = true;
+        try {
+          gtag('event', 'sesion_resumen', { segundos_activos: MED.activo, segundos_totales: Math.round((Date.now() - MED.t0) / 1000),
+            seg_hoy: MED.porPantalla.hoy || 0, seg_equipos: MED.porPantalla.equipos || 0, seg_en_vivo: MED.segVivo,
+            acciones: MED.acciones, ligas_distintas: MED.ligas.size, partidos_tocados: MED.partidos, h2h_abiertos: MED.h2h,
+            scroll_max: MED.scrollMax, pantallas_vistas: MED.pantallas.size, transport_type: 'beacon' });
+        } catch (e) {}
+      };
+      document.addEventListener('visibilitychange', () => { if (document.hidden) cerrar(); else MED.fin = false; });
+      window.addEventListener('pagehide', cerrar);
+      // errores, conexión e instalación
+      window.addEventListener('error', e => track('error_js', { mensaje: String(e.message || '').slice(0, 90) }));
+      window.addEventListener('offline', () => track('sin_internet'));
+      window.addEventListener('online', () => track('internet_vuelve'));
+      window.addEventListener('beforeinstallprompt', () => track('instalar_disponible'));
+      window.addEventListener('appinstalled', () => track('app_instalada'));
+    }
 
     function toggleH2HDetalle() {
       track('h2h_ver_detalle');
@@ -1191,6 +1267,7 @@ body.theme-light #h2h-modal > div,
     }
 
     function closeH2HModal() {
+      if (MED.h2hT) { track('h2h_cerrar', { segundos_h2h: Math.round((Date.now() - MED.h2hT) / 1000) }); MED.h2hT = 0; }
       document.getElementById('h2h-modal').classList.add('hidden');
     }
 
@@ -1445,6 +1522,7 @@ body.theme-light #h2h-modal > div,
 
     function setMainTab(t) {
       HOY.tab = t;
+      MED.pantallas.add(t);
       track('pestana', { pestana: t });
       document.getElementById('view-hoy').classList.toggle('hidden', t !== 'hoy');
       document.getElementById('view-equipos').classList.toggle('hidden', t !== 'equipos');
@@ -1528,7 +1606,11 @@ body.theme-light #h2h-modal > div,
       HOY.partidos = [...mapa.values()];
       HOY.ultima = Date.now();
       hoyCargando = false;
+      const fallos = res.filter(r => !r.j).length;
+      if (fallos > 0) track('espn_fallos', { cantidad: fallos, de: res.length });
       renderHoy();
+      if (!HOY.medido) { HOY.medido = true; const v = HOY.partidos.filter(enVentana);
+        track('hoy_vista', { cantidad: v.length, en_vivo: v.filter(p => p.vivo).length, ligas_con_partido: new Set(v.map(p => p.liga)).size }); }
     }
 
     function enVentana(p) {
@@ -1589,6 +1671,9 @@ body.theme-light #h2h-modal > div,
 
     function abrirDesdeHoy(id) {
       const p = HOY.partidos.find(x => x.id === id); if (!p) return;
+      MED.partidos++; MED.ligas.add(p.liga);
+      track('partido_tocado', { liga: p.liga, estado_partido: p.vivo ? 'en_vivo' : p.estado, partido: p.home + ' vs ' + p.away,
+        minutos_para_inicio: p.estado === 'pre' ? Math.round((p.ts - Date.now()) / 60000) : 0 });
       const hk = buscarClave(p.liga, p.home), ak = buscarClave(p.liga, p.away);
       const t = horaCol(p.ts);
       if (hk) { currentLeague = p.liga; currentTeam = hk;
@@ -1607,7 +1692,7 @@ body.theme-light #h2h-modal > div,
       // chips de categoría
       const cats = [['ALL', 'Todas'], ['VIVO', `🔴 En vivo (${nVivo})`], ['1ª', '🏆 1ª'], ['2ª', '🥈 2ª/3ª'], ['Copas', '⭐ Copas']];
       document.getElementById('hoy-chips-cat').innerHTML = cats.map(([k, n]) =>
-        `<button onclick="HOY.cat='${k}';renderHoy()" class="${chipClase(HOY.cat === k)}">${n}</button>`).join('');
+        `<button onclick="HOY.cat='${k}';track('hoy_categoria',{categoria:'${k}'});renderHoy()" class="${chipClase(HOY.cat === k)}">${n}</button>`).join('');
       // chips de ligas (solo las que tienen partidos), selección múltiple
       const codes = Object.keys(DB).filter(c => porLiga[c]);
       document.getElementById('hoy-chips-ligas').innerHTML = codes.map(c =>
@@ -1664,7 +1749,8 @@ body.theme-light #h2h-modal > div,
 
     // Iniciar al cargar y refrescar automáticamente en vivo cada 2 minutos
     document.addEventListener('DOMContentLoaded', () => {
-      init();
+      MED.silencio = true; init(); MED.silencio = false;
+      medIniciar();
       setMainTab('hoy');
       setTimeout(liveSyncFromESPN, 800);
       setInterval(liveSyncFromESPN, 120000);
